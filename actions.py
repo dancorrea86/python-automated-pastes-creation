@@ -11,6 +11,23 @@ def createFolderFromList(folders, baseFolder=''):
         folderName = os.path.join(baseFolder, folder)
         os.makedirs(folderName, True)
 
-pastas = ['audio', 'video/outros-takes', 'imagens/fotos']
+def downloadFilesFromList(files, baseFolder=''):
+    baseFolder = sanitize_filename(baseFolder)
 
-createFolderFromList(pastas, 'teste1')
+    for file in files:
+        link = files["from"]
+        destination = file["to"]
+        fileName = link.rplit("/", 1)[-1]
+        fullPathFile = os.path.join(baseFolder, destination, fileName)
+
+        if not os.path.isfile(fullPathFile):
+            print(f'BAIXANDO...{link}')
+            urllib.request.urlretrieve(link, fullPathFile)
+
+links = {"from": "http://127.0.0.1:5500/samples/cdtv-mao-no-codigo-prproj", "to", ""}
+
+
+#pastas = ['audio', 'video/outros-takes', 'imagens/fotos']
+#createFolderFromList(pastas, 'teste1')
+
+downloadFilesFromList(links, "teste1")
