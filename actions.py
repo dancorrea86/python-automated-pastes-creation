@@ -24,7 +24,7 @@ def downloadFilesFromList(files, baseFolder=''):
             print(f'BAIXANDO...{link}')
             urllib.request.urlretrieve(link, fullPathFile)
 
-links = {"from": "http://127.0.0.1:5500/samples/cdtv-mao-no-codigo-prproj", "to", ""}
+links = {"from": "http://127.0.0.1:5500/samples/cdtv-mao-no-codigo-prproj", "to": ""}
 
 
 #pastas = ['audio', 'video/outros-takes', 'imagens/fotos']
