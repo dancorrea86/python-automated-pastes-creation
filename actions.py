@@ -18,17 +18,15 @@ def downloadFilesFromList(files, baseFolder=''):
     for file in files:
         link = file["from"]
         destination = file["to"]
-        fileName = link.rplit("/", 1)[-1]
+        fileName = link.rsplit("/", 1)[-1]
         fullPathFile = os.path.join(baseFolder, destination, fileName)
 
         if not os.path.isfile(fullPathFile):
             print(f'BAIXANDO...{link}')
             urllib.request.urlretrieve(link, fullPathFile)
 
-links = {"from": "http://127.0.0.1:5500/samples/cdtv-mao-no-codigo-prproj",
-         "to": ""}
+links = [{"from": "http://127.0.0.1:5500/samples/cdtv-mao-no-codigo-prproj","to": ""}]
 
-print(links["from"])
 #pastas = ['audio', 'video/outros-takes', 'imagens/fotos']
 #createFolderFromList(pastas, 'teste1')
 
