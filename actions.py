@@ -3,31 +3,52 @@ import sys
 import json
 import urllib.request
 from pathvalidate import sanitize_filename
+import configparser
 
-def createFolderFromList(folders, baseFolder=''):
-    baseFolder = sanitize_filename(baseFolder)
+class Actions:
 
-    for folder in folders:
-        folderName = os.path.join(baseFolder, folder)
-        os.makedirs(folderName, True)
+    def __init__(self, path=''):
+        path_config_file = 'config.ini'
+        config = configparser.ConfigParser()
+        config.read(path_config_file)
+        config_link = config['DEFAULT']['config_link']
 
-def downloadFilesFromList(files, baseFolder=''):
-    baseFolder = sanitize_filename(baseFolder)
-    
+        self.path = path
+        self.config = self.__loadConfig(config_link)
+        self.actions = self.__loadActions(self, self.config)
 
-    for file in files:
-        link = file["from"]
-        destination = file["to"]
-        fileName = link.rsplit("/", 1)[-1]
-        fullPathFile = os.path.join(baseFolder, destination, fileName)
+    def __loadConfig(self, link):
+        with urllib.request.urlopen(link) as url:
+            data = json.loads(url.read().decode())
+        return data
 
-        if not os.path.isfile(fullPathFile):
-            print(f'BAIXANDO...{link}')
-            urllib.request.urlretrieve(link, fullPathFile)
+    def __loadActions(self, config):
+        return [item['type'] for item in config]
 
-links = [{"from": "http://127.0.0.1:5500/samples/cdtv-mao-no-codigo-prproj","to": ""}]
+    def __getInitPath(self, filename):
+        return filename if os.path.isfile(filename) else os.path.join(os.path.dirname(sys.executable), filename)
 
-#pastas = ['audio', 'video/outros-takes', 'imagens/fotos']
-#createFolderFromList(pastas, 'teste1')
+    def createFolderFromList(self, folders, baseFolder=''):
+        baseFolder = sanitize_filename(baseFolder)
 
-downloadFilesFromList(links, "teste1")
+        for folder in folders:
+            folderName = os.path.join(baseFolder, folder)
+            os.makedirs(folderName, True)
+
+    def downloadFilesFromList(self, files, baseFolder=''):
+        baseFolder = sanitize_filename(baseFolder)
+        
+
+        for file in files:
+            link = file["from"]
+            destination = file["to"]
+            fileName = link.rsplit("/", 1)[-1]
+            fullPathFile = os.path.join(baseFolder, destination, fileName)
+
+            if not os.path.isfile(fullPathFile):
+                print(f'BAIXANDO...{link}')
+                print(fullPathFile)
+                urllib.request.urlretrieve(link, fullPathFile)
+
+    def doActions(self, actionType, folderName):
+        [action] = [item['actions'] for item in self.config if (item, ['type'] == actionType)]
